@@ -1,5 +1,19 @@
 # health-personality
 
+**Health Personality**
+
+A science-backed health personality quiz — 15 scenario-based questions, 2 minutes, classifies you into one of four body-mind types with personalized recommendations.
+
+Built on research from Walker's *Why We Sleep*, Attia's *Outlive*, and Lieberman's *Exercised*. Every question is hand-crafted from original book notes — no AI-generated quiz content.
+
+Live demo: <https://health-personality.vercel.app>
+
+Users: Thousands of completions via WeChat and RedNote (Xiaohongshu)
+
+![Health Personality README 1](./assets/readme1.png)
+
+![Health Personality README 2](./assets/readme2.jpg)
+
 我做了一个健康人格测试，帮你了解自己的身体。15 道生活场景题，2 分钟，测完会告诉你属于四种身体人格中的哪一种，并给到专属建议。
 
 没有用 AI 直接生成题库，一个是质感不对，AI 生成的东西容易回归平庸；二是健康科普需要尽量严谨，我希望我发出来的东西都能让阅读者有基本的信任。
@@ -35,9 +49,9 @@
 
 ## 版权说明
 
-版权所有 © 2026 KingJing1 ([@一龙小包子](https://x.com/KingJing001))。保留所有权利。
+版权所有 © 2026 KingJing1 ([@一龙小包子](https://x.com/KingJing001))。
 
-本仓库代码与设计仅供查看与学习参考。未经作者事先书面许可，不得复制、修改、再发布、商用、镜像部署，或用于创建实质相似的衍生作品。
+本项目采用 MIT License，详见 `LICENSE`。
 
 ## 内容
 
@@ -63,8 +77,10 @@ open index.html
 ## 文件
 
 - `index.html`：页面源码
-- `LICENSE`：版权与使用限制说明
+- `assets/readme1.png`：README 展示图 1
+- `assets/readme2.jpg`：README 展示图 2
+- `LICENSE`：MIT 许可证
 
 ## License
 
-All Rights Reserved
+MIT
