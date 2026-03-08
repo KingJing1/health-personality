@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>健康人格测试</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#000;--bg2:#111;--bg3:#1c1c1e;
+  --card:#1c1c1e;--card2:#2c2c2e;
+  --text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;
+  --green:#30d158;--green2:#248a3d;--green-bg:rgba(48,209,88,.08);
+  --blue:#0a84ff;--blue-bg:rgba(10,132,255,.08);
+  --orange:#ff9f0a;--orange-bg:rgba(255,159,10,.08);
+  --pink:#ff375f;--pink-bg:rgba(255,55,95,.08);
+  --purple:#bf5af2;--purple-bg:rgba(191,90,242,.08);
+  --radius:16px;--radius-sm:12px;
+  --font-cn:-apple-system,"PingFang SC","Noto Sans SC","Helvetica Neue",sans-serif;
+  --font-en:"Outfit",var(--font-cn);
+  --ease:cubic-bezier(.4,0,.2,1);
+  --ease-spring:cubic-bezier(.34,1.56,.64,1);
+}
+html{font-size:16px;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{
+  font-family:var(--font-cn);background:var(--bg);color:var(--text);
+  min-height:100dvh;overflow-x:hidden;
+  display:flex;justify-content:center;
+}
+#app{width:100%;max-width:440px;min-height:100dvh;position:relative;overflow:hidden}
+
+/* ===== Screens ===== */
+.screen{
+  position:absolute;inset:0;padding:0 24px;
+  display:flex;flex-direction:column;
+  opacity:0;transform:translateY(20px);
+  pointer-events:none;transition:opacity .5s var(--ease),transform .5s var(--ease);
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
+}
+.screen::-webkit-scrollbar{display:none}
+.screen.active{opacity:1;transform:translateY(0);pointer-events:auto;z-index:2}
+.screen.exit{opacity:0;transform:translateY(-20px);pointer-events:none;position:absolute;z-index:1}
+
+/* ===== Progress Bar ===== */
+.progress-wrap{
+  position:sticky;top:0;
+  z-index:10;background:linear-gradient(var(--bg),var(--bg) 80%,transparent);
+  padding-top:env(safe-area-inset-top,12px);padding-bottom:12px;
+}
+.progress-bar{height:3px;background:var(--bg3);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--blue));
+  border-radius:2px;transition:width .6s var(--ease);width:0}
+.progress-text{font-size:12px;color:var(--text3);margin-top:6px;
+  font-family:var(--font-en);letter-spacing:.5px}
+
+/* ===== Landing ===== */
+.landing{
+  min-height:100%;display:flex;flex-direction:column;
+  justify-content:center;align-items:center;text-align:center;padding-top:0;
+}
+.landing-glow{
+  position:absolute;top:-120px;left:50%;transform:translateX(-50%);
+  width:360px;height:360px;
+  background:radial-gradient(circle,rgba(48,209,88,.12) 0%,rgba(10,132,255,.06) 40%,transparent 70%);
+  border-radius:50%;filter:blur(40px);pointer-events:none;
+  animation:glow-pulse 4s ease-in-out infinite;
+}
+@keyframes glow-pulse{0%,100%{opacity:.6;transform:translateX(-50%) scale(1)}50%{opacity:1;transform:translateX(-50%) scale(1.1)}}
+.landing h1{font-size:28px;font-weight:700;line-height:1.3;margin-bottom:12px;letter-spacing:-.5px}
+.landing .subtitle{
+  font-size:clamp(11px,3.4vw,14px);color:var(--text2);line-height:1.5;margin-bottom:40px;
+  max-width:none;
+}
+.landing .subtitle-line{
+  display:block;
+  white-space:nowrap;
+}
+.landing-features{
+  display:flex;gap:20px;margin-bottom:40px;justify-content:center;
+}
+.landing-feat{text-align:center}
+.landing-feat-num{
+  font-family:var(--font-en);font-size:24px;font-weight:600;
+  background:linear-gradient(135deg,var(--green),var(--blue));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.landing-feat-label{font-size:12px;color:var(--text3);margin-top:2px}
+
+.btn-primary{
+  display:inline-flex;align-items:center;justify-content:center;
+  height:52px;padding:0 40px;border-radius:26px;border:none;cursor:pointer;
+  font-size:17px;font-weight:600;font-family:var(--font-cn);
+  color:#fff;background:var(--green);
+  box-shadow:0 4px 24px rgba(48,209,88,.35);
+  transition:all .3s var(--ease);position:relative;overflow:hidden;
+}
+.btn-primary::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.15) 50%,transparent 60%);
+  transform:translateX(-100%);transition:transform .6s;
+}
+.btn-primary:hover::after{transform:translateX(100%)}
+.btn-primary:active{transform:scale(.97);box-shadow:0 2px 12px rgba(48,209,88,.25)}
+
+.landing-credit{
+  font-size:13px;color:var(--text3);margin-top:32px;
+}
+.landing-credit span{color:var(--text2)}
+.landing-books{font-size:11px;color:var(--text3);margin-top:8px;font-style:italic}
+.author-link{
+  color:var(--text2);text-decoration:none;position:relative;
+  transition:color .25s var(--ease),opacity .25s var(--ease);
+}
+.author-link::after{
+  content:'';
+  position:absolute;left:0;bottom:-2px;
+  width:100%;height:1px;
+  background:linear-gradient(90deg,var(--green),var(--blue));
+  transform:scaleX(0);transform-origin:left;
+  transition:transform .25s var(--ease);opacity:.85;
+}
+.author-link:hover{
+  color:#fff;
+}
+.author-link:hover::after{transform:scaleX(1)}
+.author-link:active{opacity:.8}
+
+/* ===== Questions ===== */
+.q-module{font-size:12px;color:var(--green);font-weight:500;letter-spacing:1px;
+  text-transform:uppercase;margin-bottom:8px;margin-top:20px;font-family:var(--font-en)}
+.q-title{font-size:20px;font-weight:600;line-height:1.5;margin-bottom:24px;letter-spacing:-.2px}
+.q-options{display:flex;flex-direction:column;gap:10px;padding-bottom:32px}
+.q-opt{
+  background:var(--card);border:1.5px solid transparent;border-radius:var(--radius-sm);
+  padding:16px 18px;cursor:pointer;transition:all .3s var(--ease);
+  display:flex;align-items:flex-start;gap:12px;position:relative;
+  -webkit-tap-highlight-color:transparent;
+}
+@media (hover:hover) and (pointer:fine){
+  .q-opt:hover{border-color:rgba(255,255,255,.08);background:var(--card2)}
+}
+.q-opt.selected{border-color:var(--green);background:var(--green-bg)}
+.q-opt.selected .q-opt-letter{background:var(--green);color:#fff}
+.q-opt-letter{
+  flex-shrink:0;width:28px;height:28px;border-radius:8px;
+  background:var(--card2);color:var(--text3);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-en);font-size:13px;font-weight:600;
+  transition:all .3s var(--ease);
+}
+.q-opt-text{font-size:15px;line-height:1.55;color:var(--text);padding-top:3px}
+
+/* Science Egg */
+.q-egg{
+  max-height:0;overflow:hidden;transition:max-height .5s var(--ease),opacity .4s var(--ease);
+  opacity:0;
+}
+.q-egg.show{max-height:200px;opacity:1}
+.q-egg-inner{
+  margin-top:12px;padding:14px 16px;
+  background:var(--bg2);border-radius:var(--radius-sm);
+  border-left:3px solid var(--blue);
+}
+.q-egg-inner p{font-size:13px;line-height:1.65;color:var(--text2)}
+.egg-emoji{margin-right:6px}
+
+/* Age encouragement */
+.q-encourage{
+  max-height:0;overflow:hidden;opacity:0;
+  transition:max-height .5s var(--ease),opacity .4s var(--ease);
+}
+.q-encourage.show{max-height:80px;opacity:1}
+.q-encourage-inner{
+  margin-top:12px;padding:12px 16px;
+  background:var(--green-bg);border-radius:var(--radius-sm);
+  font-size:13px;line-height:1.6;color:var(--green);
+}
+
+/* Next button */
+.q-next-wrap{padding:8px 0 40px;padding-bottom:max(40px,env(safe-area-inset-bottom))}
+.btn-next{
+  width:100%;height:50px;border-radius:14px;border:none;cursor:pointer;
+  font-size:16px;font-weight:600;font-family:var(--font-cn);
+  color:#fff;background:var(--green);
+  opacity:0;transform:translateY(8px);
+  transition:all .35s var(--ease);pointer-events:none;
+}
+.btn-next.visible{opacity:1;transform:translateY(0);pointer-events:auto}
+.btn-next:active{transform:scale(.98)}
+
+/* ===== Result Page ===== */
+.result{padding-top:48px;padding-bottom:60px}
+.result-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:500;
+  margin-bottom:20px;font-family:var(--font-en);letter-spacing:.5px;
+}
+.result-name{font-size:30px;font-weight:700;line-height:1.3;margin-bottom:4px}
+.result-name-en{font-family:var(--font-en);font-size:16px;font-weight:400;
+  color:var(--text3);margin-bottom:16px;letter-spacing:.5px}
+.result-tagline{font-size:16px;line-height:1.6;margin-bottom:32px}
+
+/* Activity Rings */
+.rings-wrap{
+  display:flex;align-items:center;justify-content:center;
+  gap:32px;margin-bottom:36px;padding:28px 0;
+  background:var(--bg2);border-radius:var(--radius);
+}
+.ring-container{position:relative;width:100px;height:100px}
+.ring-container svg{transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--bg3);stroke-width:8}
+.ring-fill{fill:none;stroke-width:8;stroke-linecap:round;
+  transition:stroke-dashoffset 1.5s var(--ease);stroke-dashoffset:251.2}
+.ring-label{
+  position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+  text-align:center;
+}
+.ring-score{font-family:var(--font-en);font-size:22px;font-weight:600}
+.ring-title{font-size:10px;color:var(--text3);margin-top:1px}
+
+/* Advice Cards */
+.advice-section{margin-top:28px}
+.advice-section-title{font-size:13px;color:var(--text3);font-weight:500;
+  margin-bottom:16px;letter-spacing:.5px}
+.advice-card{
+  background:var(--card);border-radius:var(--radius);
+  padding:20px;margin-bottom:12px;
+  border-left:3px solid var(--green);
+}
+.advice-card h3{font-size:15px;font-weight:600;line-height:1.5;margin-bottom:10px}
+.advice-card p{font-size:14px;line-height:1.7;color:var(--text2);margin-bottom:12px}
+.advice-action{
+  font-size:13px;line-height:1.6;padding:12px 14px;
+  background:var(--bg2);border-radius:var(--radius-sm);
+}
+
+/* Cross validation note */
+.cross-note{
+  margin-top:20px;padding:16px;border-radius:var(--radius-sm);
+  background:var(--bg2);border:1px solid rgba(255,255,255,.06);
+  font-size:13px;line-height:1.65;color:var(--text2);
+}
+
+/* Share Section */
+.share-section{
+  margin-top:32px;text-align:center;
+  padding:24px 0 20px;
+}
+.share-section p{font-size:13px;color:var(--text3);margin-bottom:16px}
+.btn-share{
+  display:inline-flex;align-items:center;gap:8px;
+  height:48px;padding:0 32px;border-radius:24px;border:none;cursor:pointer;
+  font-size:15px;font-weight:600;font-family:var(--font-cn);
+  color:#fff;background:linear-gradient(135deg,var(--green),var(--blue));
+  box-shadow:0 4px 20px rgba(48,209,88,.25);
+  transition:all .3s var(--ease);
+}
+.btn-share:active{transform:scale(.97)}
+.btn-share svg{width:18px;height:18px}
+.btn-restart{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:16px;height:40px;padding:0 24px;border-radius:20px;
+  border:1px solid rgba(255,255,255,.12);background:transparent;
+  cursor:pointer;font-size:13px;color:var(--text3);font-family:var(--font-cn);
+  transition:all .3s var(--ease);
+}
+.btn-restart:hover{border-color:rgba(255,255,255,.2);color:var(--text2)}
+
+/* ===== Share Card (modal) ===== */
+.share-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.85);
+  display:flex;align-items:center;justify-content:center;
+  z-index:100;opacity:0;pointer-events:none;
+  transition:opacity .4s var(--ease);padding:20px;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+.share-overlay.show{opacity:1;pointer-events:auto}
+.share-card{
+  width:min(92vw,360px);text-align:center;
+  transform:scale(.96);transition:transform .35s var(--ease);
+  position:relative;overflow:visible;
+  display:flex;flex-direction:column;align-items:center;
+}
+.share-overlay.show .share-card{transform:scale(1)}
+#share-capture{
+  position:fixed;left:-9999px;top:0;
+  width:450px;height:600px;box-sizing:border-box;
+  padding:48px 40px 72px;
+  background:#1D1D1F;color:#fff;
+  display:flex;flex-direction:column;
+  pointer-events:none;z-index:-1;
+}
+.share-export-name{
+  font-size:34px;line-height:1.2;font-weight:700;letter-spacing:.2px;
+  margin-bottom:8px;text-align:center;
+}
+.share-export-en{
+  font-size:15px;line-height:1.4;font-weight:300;letter-spacing:.9px;
+  color:#8E8E93;margin-bottom:24px;text-align:center;
+}
+.share-export-tagline{
+  font-size:17px;line-height:1.6;color:#fff;text-align:center;
+  margin-bottom:24px;
+}
+.share-export-quote{
+  background:#2C2C2E;border-radius:16px;padding:24px;margin-bottom:32px;
+}
+.share-export-quote-title{
+  font-size:15px;line-height:1.6;color:#fff;font-weight:600;text-align:center;
+  margin-bottom:8px;
+}
+.share-export-quote-text{
+  font-size:14.5px;line-height:1.6;color:#E5E5EA;text-align:center;
+}
+.share-export-source{
+  font-size:12px;line-height:1.4;color:#8E8E93;text-align:center;margin-top:12px;
+}
+.share-export-footer{
+  margin-top:auto;padding-top:24px;padding-bottom:32px;text-align:center;
+}
+.share-export-bless{
+  font-size:14px;line-height:1.4;color:#fff;margin-bottom:10px;
+}
+.share-export-sign{
+  font-size:12px;line-height:1.4;color:#6E6E73;margin-bottom:6px;
+}
+.share-export-author{
+  color:#6E6E73;text-decoration:none;
+}
+.share-export-link{
+  font-size:11px;line-height:1.3;color:#6E6E73;
+}
+.share-save-wrap{
+  position:relative;
+  width:100%;
+}
+.share-save-loading{
+  font-size:12px;color:#8E8E93;padding:12px 0;
+}
+.share-save-img{
+  display:none;width:100%;aspect-ratio:3/4;object-fit:cover;
+  border-radius:0;border:none;background:#1D1D1F;
+}
+.share-save-img.ready{display:block}
+.share-save-tip{
+  margin-top:16px;font-size:13px;line-height:1.4;color:#6E6E73;text-align:center;
+}
+.share-close{
+  position:absolute;top:-14px;right:-4px;width:32px;height:32px;
+  border-radius:50%;background:rgba(255,255,255,.08);border:none;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text3);z-index:2;transition:background .2s;
+}
+.share-close:hover{background:rgba(255,255,255,.14)}
+
+/* ===== Animations ===== */
+@keyframes fade-up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.animate-in{animation:fade-up .5s var(--ease) both}
+.delay-1{animation-delay:.1s}.delay-2{animation-delay:.2s}
+.delay-3{animation-delay:.3s}.delay-4{animation-delay:.4s}
+.delay-5{animation-delay:.5s}
+
+/* Responsive */
+@media(max-width:380px){
+  .landing h1{font-size:24px}
+  .q-title{font-size:18px}
+  .result-name{font-size:26px}
+  .rings-wrap{gap:20px;padding:20px 0}
+  .ring-container{width:85px;height:85px}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- Landing -->
+<div class="screen active" id="screen-landing">
+  <div class="landing">
+    <div class="landing-glow"></div>
+    <h1 class="animate-in">你的身体，<br>是哪种人格？</h1>
+    <p class="subtitle animate-in delay-1"><span class="subtitle-line">2 分钟了解你的恢复力与行动力</span><span class="subtitle-line">基于《Why We Sleep》《Outlive》《Exercised》</span></p>
+    <div class="landing-features animate-in delay-2">
+      <div class="landing-feat">
+        <div class="landing-feat-num">15</div>
+        <div class="landing-feat-label">真实场景</div>
+      </div>
+      <div class="landing-feat">
+        <div class="landing-feat-num">2</div>
+        <div class="landing-feat-label">核心维度</div>
+      </div>
+      <div class="landing-feat">
+        <div class="landing-feat-num">4</div>
+        <div class="landing-feat-label">专属人格</div>
+      </div>
+    </div>
+    <button class="btn-primary animate-in delay-3" onclick="startTest()">开始测试</button>
+    <div class="landing-credit animate-in delay-4">by <a class="author-link" href="https://xhslink.com/m/2WD4NkxZgNN" target="_blank" rel="noopener noreferrer">@一龙小包子</a></div>
+  </div>
+</div>
+
+<!-- Question Screen (template, built dynamically) -->
+<div class="screen" id="screen-question"></div>
+
+<!-- Result Screen -->
+<div class="screen" id="screen-result"></div>
+
+</div>
+
+<!-- Share Card Overlay -->
+<div class="share-overlay" id="share-overlay" onclick="closeShare(event)">
+  <div class="share-card" id="share-card">
+    <button class="share-close" onclick="closeShare(event)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+<script>
+// ===== DATA =====
+const questions = [
+  // Module A: Q1-Q4 (no scoring)
+  {
+    id:'Q1', module:'A · 关于你', title:'你的性别',
+    options:[
+      {label:'A',text:'🏃‍♂️ 男'},
+      {label:'B',text:'🏃‍♀️ 女'},
+      {label:'C',text:'🌈 其他'},
+      {label:'D',text:'🐱 不想说'},
+    ]
+  },
+  {
+    id:'Q2', module:'A · 关于你', title:'你的年龄',
+    options:[
+      {label:'A',text:'🌱 18-25 岁'},
+      {label:'B',text:'🚀 26-35 岁'},
+      {label:'C',text:'⚡️ 36-45 岁'},
+      {label:'D',text:'💪 46 岁以上'},
+    ],
+    encouragements:[
+      '身体可塑性最强的阶段，现在种下的每一颗种子都会加倍生长',
+      '打底盘的黄金窗口，这个阶段建立的习惯会成为未来几十年的地基',
+      '质量比数量更重要，聪明地动、认真地睡，效率是你最大的杠杆',
+      '每一步都在重新定义可能性，你比自己以为的拥有更多主动权',
+    ]
+  },
+  {
+    id:'Q3', module:'A · 关于你', title:'你最关心哪一件事',
+    options:[
+      {label:'A',text:'睡更好、精力更足'},
+      {label:'B',text:'体能更强、更有力'},
+      {label:'C',text:'减重或改变体型'},
+      {label:'D',text:'长期健康、延缓衰老'},
+    ]
+  },
+  {
+    id:'Q4', module:'A · 关于你', title:'你现在大致的运动状态是',
+    options:[
+      {label:'A',text:'几乎从不运动'},
+      {label:'B',text:'偶尔运动，每周 1-2 次且不规律'},
+      {label:'C',text:'规律运动，每周 3-4 次'},
+      {label:'D',text:'高频训练，每周 5 次以上'},
+    ]
+  },
+  // Module B: Q5-Q15 (scored)
+  {
+    id:'Q5', module:'B · 你的生活', 
+    title:'周五你因为工作连续奋战到凌晨一点多。周六早上，你会',
+    options:[
+      {label:'A',text:'睡到中午，用一个长觉把昨晚欠的睡眠补回来，下午躺着休息',r:0,o:0,
+       egg:'「补觉」会打乱生物钟的锚点，实验显示它能延迟恢复睡眠节律长达数天。'},
+      {label:'B',text:'尽量在平时差不多的时间起床，虽然困，但出门走一走，下午早睡',r:3,o:2,
+       egg:'固定起床时间是昼夜节律系统的核心锚点；轻度活动能加速腺苷代谢，缩短恢复期。'},
+      {label:'C',text:'按时起床，但完全没力气动，就在家发呆、刷手机，晚上早点睡',r:2,o:0,
+       egg:'维持起床时间保护了节律，但缺乏活动意味着肌肉的抗炎信号仍然缺席。'},
+      {label:'D',text:'睡到10点多，起来后去健身房练一场，但又熬到凌晨一点多才睡',r:0,o:2,
+       egg:'不规律的睡眠窗口会产生「社交时差」，其对代谢的影响程度相当于每周跨两个时区。'},
+    ]
+  },
+  {
+    id:'Q6', module:'B · 你的生活',
+    title:'下午 4 点，你明显感到一阵疲惫和困倦。你会',
+    options:[
+      {label:'A',text:'立刻点一杯冰美式或能量饮料，让自己重新振作起来',r:0,o:0,
+       egg:'咖啡因通过占据腺苷受体来掩盖睡眠压力，而非清除它；半衰期约6小时，下午4点摄入对深夜仍有影响。'},
+      {label:'B',text:'离开椅子，去外面快走10-15分钟，不喝咖啡',r:2,o:2,
+       egg:'短暂步行能提升核心体温和心率，产生短暂的清醒效果；同时让腺苷积累继续，保证夜间睡眠压力。'},
+      {label:'C',text:'找个安静的地方闭眼休息或打个盹，大概20分钟',r:3,o:1,
+       egg:'20分钟以内的「能量小憩」能有效清除约40%的腺苷积累，恢复警觉性，且不影响夜间睡眠——前提是在下午3点前完成。'},
+      {label:'D',text:'继续硬撑着工作，困意过一阵就好了，不想打断节奏',r:1,o:1,
+       egg:'午后困倦是双进程睡眠模型的正常节律信号，压制它不会消除睡眠压力，只会推迟它在夜间爆发。'},
+    ]
+  },
+  {
+    id:'Q7', module:'B · 你的生活',
+    title:'朋友发来消息：「明天早上7点一起去公园跑步？」你昨晚睡了不到6小时。你会',
+    options:[
+      {label:'A',text:'去！闹钟定好，就算今天状态差，也不想爽约，跑完了再说',r:3,o:2,
+       egg:'即便睡眠不足，轻中度有氧运动仍能提升当天的认知功能和情绪状态；保持固定起床习惯的好处通常大于这点损失。'},
+      {label:'B',text:'发消息改约，继续睡到自然醒，睡够最重要',r:0,o:0,
+       egg:'睡眠不足后的「补偿式久睡」会打乱生物钟节律，导致接下来数天的入睡时间系统性延后。'},
+      {label:'C',text:'去，但提前说好我只走路不跑——保持节律，但量力而行',r:3,o:1,
+       egg:'在疲劳状态下主动降低训练强度是专业运动员的标准做法，轻度活动有助于恢复，而非消耗。'},
+      {label:'D',text:'不去了，但还是在平时的时间起床，在家拉拉筋，下午补一个小觉',r:2,o:1,
+       egg:'保持起床时间是对节律最小代价的保护方式；下午的短暂小憩（20分钟内）能安全补回部分睡眠债。'},
+    ]
+  },
+  {
+    id:'Q8', module:'B · 你的生活',
+    title:'你约了朋友在一栋写字楼的 5 楼咖啡厅见面，到了以后发现电梯在排队，你要从三楼去五楼。你会',
+    options:[
+      {label:'A',text:'排队等电梯——两层楼也不想爬，等一下也不久',r:1,o:0,
+       egg:'日常性「懒得动」是进化赐予的能量守恒本能，这不是道德问题；但它会让肌肉每天少发出大量抗炎信号。'},
+      {label:'B',text:'走楼梯上去，这种程度不算运动，只是正常移动',r:2,o:2,
+       egg:'将日常体力活动视为「背景默认值」而非「额外努力」的人，基线活动量通常高出静坐者30-40%。'},
+      {label:'C',text:'走楼梯，顺手加快步伐，能动就动，不浪费机会',r:2,o:3,
+       egg:'「非结构性体力活动」对每日总能量消耗的贡献，在活跃人群中可以高达久坐人群的3倍。'},
+      {label:'D',text:'犹豫了一下，还是继续排队等电梯——今天已经够累了',r:0,o:0,
+       egg:'主观疲惫感在久坐工作后非常常见，但它和肌肉的实际疲劳程度几乎不相关——身体没有动，只是大脑累了。'},
+    ]
+  },
+  {
+    id:'Q9', module:'B · 你的生活',
+    title:'好朋友刚开始健身，问你平时怎么锻炼的。你的诚实回答是',
+    options:[
+      {label:'A',text:'我基本不怎么锻炼，偶尔心血来潮去一次，然后消失好几个月',r:1,o:0,
+       egg:'间歇性运动比完全不运动稍好，但无法积累有氧底座；有氧能力的提升需要至少连续6-8周的规律刺激。'},
+      {label:'B',text:'我有时候会集中练一两周，然后因为工作或其他事情就断了',r:1,o:1,
+       egg:'「开始-停止」型运动模式的问题不在于总量，而在于节律——身体适应效果主要来自稳定的刺激，而非偶发的高强度。'},
+      {label:'C',text:'基本每周都有，但不算系统，今天跑步、下周打球、再下周跳绳',r:2,o:2,
+       egg:'多样化运动优于单一重复，能锻炼不同肌群和能量系统；只要频率稳定，种类多样性是优势而非缺陷。'},
+      {label:'D',text:'固定几项，每周的计划相当稳定，已经像吃饭睡觉一样自然了',r:3,o:3,
+       egg:'运动习惯的「自动化」是行为科学研究中最强的健康预测因子之一——不靠意志力，靠的是系统。'},
+    ]
+  },
+  {
+    id:'Q10', module:'B · 你的生活',
+    title:'公司团建，户外越野 5 公里。你的状态是',
+    options:[
+      {label:'A',text:'走了不到一半就腿酸气喘，最后用走的完成，第二天浑身酸痛',r:1,o:0,
+       egg:'完成5公里徒步后次日酸痛，提示有氧底座和肌肉离心控制能力有提升空间——这两者都可以通过规律训练在8-12周内显著改善。'},
+      {label:'B',text:'走完了，但中途明显喘，需要放慢速度，第二天有点酸但还好',r:1,o:1,
+       egg:'无法在徒步中正常交谈，说明强度超出了轻松有氧范围——一个有意义的自测标准：轻松有氧是「能说话但无法唱歌」的强度。'},
+      {label:'C',text:'全程可以边走边聊天，完成后不太累，第二天基本感觉不到影响',r:2,o:2,
+       egg:'能轻松完成5公里徒步并快速恢复，是有氧底座健康和代谢灵活性良好的信号。'},
+      {label:'D',text:'感觉轻松，甚至想跑起来；五公里对我来说只是热身量',r:2,o:3,
+       egg:'主观感觉轻松完成的运动量，往往反映了一个人的真实有氧底座宽度；心肺能力强的人在同等强度下动用的相对储备更少。'},
+    ]
+  },
+  {
+    id:'Q11', module:'B · 你的生活',
+    title:'连续三小时盯着屏幕工作后，你站起来去倒杯水。你注意到自己的身体状态是',
+    options:[
+      {label:'A',text:'没什么感觉，完全正常，完全可以继续再坐三小时',r:1,o:0,
+       egg:'身体对长时间静坐「毫无感觉」，反映了久坐感知的钝化——这类人的身体缺少了中断久坐的本能提示信号。'},
+      {label:'B',text:'背部和脖子有点僵，站起来舒服多了，但我一般会忍着不起来',r:1,o:1,
+       egg:'有信号但压制信号，说明身体的「中断久坐」提示仍然存在——只需要在行为上顺应它，而不是对抗它。'},
+      {label:'C',text:'明显觉得需要动一动，已经养成了大约每小时站起来走走的习惯',r:2,o:2,
+       egg:'每30-60分钟中断久坐，是目前证据支持的对抗久坐带来的慢性炎症最低成本的方式。'},
+      {label:'D',text:'我已经在用站立桌或者定时提醒，很少连续坐超过40分钟',r:3,o:3,
+       egg:'把健康意识嵌入工作环境，而非依赖额外的锻炼时间——这是一种高质量的日常活动模式。'},
+    ]
+  },
+  {
+    id:'Q12', module:'B · 你的生活',
+    title:'回想过去一个月，你对自己的睡眠质量最诚实的描述是',
+    options:[
+      {label:'A',text:'经常失眠或半夜醒来，或者即使睡了足够时间，醒来依然疲惫',r:0,o:0,
+       egg:'「睡够时间却仍然疲惫」是深度睡眠受损的典型信号，而非单纯的时长问题——酒精、蓝光暴露和不规律节律是最常见的原因。'},
+      {label:'B',text:'时好时坏，工作压力大的时候睡眠明显变差，好的时候还不错',r:1,o:1,
+       egg:'睡眠质量随压力波动，说明压力调节能力处于中等水平；这类人通过稳定的睡前仪式能获得显著改善。'},
+      {label:'C',text:'总体不错，大多数夜晚睡得好，偶尔一两晚差也不太影响隔天状态',r:2,o:2,
+       egg:'对偶发睡眠中断有恢复韧性，是昼夜节律系统健康和压力应对能力良好的综合体现。'},
+      {label:'D',text:'非常稳定，每晚入睡快、睡得深，醒来精力充沛，是我最不用操心的事儿',r:3,o:3,
+       egg:'稳定的高质量睡眠与更低的全因死亡率、更强的免疫力、更高的认知功能和更好的运动表现全部相关——它可能是所有健康行为中杠杆效应最大的一项。'},
+    ]
+  },
+  {
+    id:'Q13', module:'B · 你的生活',
+    title:'睡前最后半小时，你的「真实常态」（不是理想状态）是什么样子',
+    options:[
+      {label:'A',text:'刷手机或平板，刷着刷着就睡着了，手机直接掉脸上',r:0,o:0,
+       egg:'「刷着刷着睡着」通常不是好睡眠信号——在蓝光和信息刺激下「崩溃式入睡」，往往意味着睡眠债很深，而非入睡能力强。'},
+      {label:'B',text:'知道应该放下手机，但总会忍不住多看一会儿，不算太晚就好',r:1,o:1,
+       egg:'「随便看看」的边界往往会系统性地被突破——研究显示用户实际的睡前手机使用时长比主观估计平均多出43%。'},
+      {label:'C',text:'睡前会把手机放到充电器上，做点别的：洗澡、听播客、看纸质书',r:2,o:2,
+       egg:'手机物理隔离是目前行为科学支持的最有效的睡前减少蓝光暴露手段——意志力在睡前处于全天最低点，环境设计比决心管用。'},
+      {label:'D',text:'有固定的睡前仪式：灯光调暗、特定的放松活动、几乎相同的上床时间',r:3,o:2,
+       egg:'固定的睡前仪式通过条件反射激活副交感神经系统，让大脑提前收到「即将入睡」的信号；入睡前的核心体温下降速率也会因此加快。'},
+    ]
+  },
+  {
+    id:'Q14', module:'B · 你的生活',
+    title:'遇上一段高压冲刺期（项目截止、考试周、家里有大事……），你的状态通常是',
+    options:[
+      {label:'A',text:'整个人都散架了：睡不着、运动全停、脑子转不动，扛过去再说',r:0,o:0,
+       egg:'压力状态下同时放弃睡眠和运动，会让压力激素和慢性炎症在最需要高效运转的时刻升到最高——恰好是最不应该妥协的两件事。'},
+      {label:'B',text:'睡眠变差、运动减少，但会强迫自己至少保留一两次轻量活动',r:1,o:1,
+       egg:'高压期保留轻量运动（如散步或拉伸）的人，压力激素日均水平比完全停止运动者低约18%——小量运动在压力期的回报远超其时间成本。'},
+      {label:'C',text:'会影响，但我能撑住，压力结束后一两天通常就恢复正常了',r:2,o:2,
+       egg:'对压力后的快速恢复能力，这被称为「应激韧性」——它可以通过规律的轻松有氧训练和稳定的睡眠节律主动提升。'},
+      {label:'D',text:'反而更专注，睡眠基本不受影响，运动也照常，进入「专注模式」',r:3,o:3,
+       egg:'能在高压力下维持生理节律的人，其大脑的情绪调节回路通常经过了长期良好睡眠和规律运动的「训练」——这种韧性是后天可以建立的。'},
+    ]
+  },
+  {
+    id:'Q15', module:'B · 你的生活',
+    title:'你在体检报告上看到「未见异常」，你的第一反应是',
+    options:[
+      {label:'A',text:'松了口气，太好了，说明我现在的生活方式没什么大问题',r:0,o:0,
+       egg:'「体检正常」使用的参考范围来自普通人群样本，而非最优健康状态——以人群平均为目标，意味着你在和一个普遍不够健康的基准比较。'},
+      {label:'B',text:'还不错，但我知道体检是事后检测，说明不了太多预防层面的东西',r:1,o:2,
+       egg:'传统体检是「等到症状出现再干预」的逻辑；而提前10-20年介入才是预防慢性病的真正窗口期。'},
+      {label:'C',text:'好的，但我还是会继续观察一些体检不涵盖的指标，比如静息心率趋势',r:2,o:2,
+       egg:'静息心率趋势和心率变异性是目前消费级设备可以追踪的、最有意义的恢复能力代理指标——它们比单次血液检查更能反映长期的自律神经健康。'},
+      {label:'D',text:'只是及格线，我更关心一些更早期、更灵敏的代谢指标',r:3,o:3,
+       egg:'早期代谢指标能在血糖出现异常的10-15年前探测到问题，比常规体检的灵敏度高得多——这是「主动出击」和「被动等待」的区别。'},
+    ]
+  },
+];
+
+const personalities = {
+  grandmaster: {
+    name:'进化的宗师', en:'The Grandmaster',
+    tagline:'恢复与输出的双轴平衡者',
+    color:'var(--green)', colorHex:'#30d158', bg:'var(--green-bg)',
+    portrait:'你既懂得用规律运动主动对抗衰老，又敬畏睡眠的生物学需求。在这三本经典健康书籍的逻辑框架里，宗师同时做对了最难做到的两件事。他们通常并非天赋异禀，只是在某个时间点真正理解了身体的逻辑，并长期执行。社交属性极强，「我有个朋友，状态一直很好」，说的多半就是这类人。',
+    focus:'优势不会自动维持。人的心肺能力每十年自然下降约 10%，肌肉储备 40 岁后加速流失。如果不主动管理，维持现状其实是在缓慢后退。你的课题是「守住」。',
+    advice:[
+      {title:'心肺能力是最值得主动守护的资产',source:'Attia《超越百岁》',
+       body:'高心肺能力与更低的全因死亡率相关，这个效果甚至超过戒烟带来的收益。宗师的心肺能力已经处于高位，但这个资产每年都在自然贬值，必须主动「续投」。',
+       action:'每周保留 1 次高强度间歇训练——全力冲刺 30 秒，休息 90 秒，重复 6-8 组，总时长不到 20 分钟。这是阻止心肺能力自然下降的最低有效剂量。'},
+      {title:'现在就开始为 80 岁的自己存「力量退休金」',source:'Attia《超越百岁》',
+       body:'想在 85 岁能轻松抱起一个孩子，你今天需要具备这个目标力量的 150%——因为 40 岁后每十年流失 8-17% 的肌肉量。有氧能力出色的宗师，往往轻视了对力量训练的系统投入。',
+       action:'每三个月做一次力量基准测试（引体向上次数、单腿蹲深度、硬拉重量）。把目标从「我感觉状态不错」改为「数字在增长」——每季度提升 5% 是合理目标。'},
+      {title:'出差和节假日是宗师最容易忽视的节律杀手',source:'Walker《我们为什么要睡觉》',
+       body:'深度睡眠集中在后半夜，是情绪调节和运动技能巩固的关键窗口。哪怕只比平时晚睡 90 分钟，这部分睡眠量就会大幅缩减。出差、时差、过节——这些对宗师是真正的风险点。',
+       action:'出差前后连续 3 天在同一时间起床，不补觉、不调闹钟。节律重新校准的速度远快于你以为的，但前提是主动锚定起床时间。'},
+    ]
+  },
+  achilles: {
+    name:'燃烧的阿喀琉斯', en:'The Achilles',
+    tagline:'行动力满格，解锁恢复就是下一个飞跃',
+    color:'var(--pink)', colorHex:'#ff375f', bg:'var(--pink-bg)',
+    portrait:'你极度自律，行动力在所有人格里排第一。你对极限和挑战有相当高的耐受度，被周围人尊重，「这人太拼了」。阿喀琉斯的优势是强大的执行力和身体输出能力，一旦把同样的重视给到恢复，进步速度会远超现在。',
+    focus:'你用高输出掩盖了恢复的缺口。没有足够恢复，训练效果有近四分之一被白白浪费，而且这种浪费很难被感知到。好消息是：阿喀琉斯补齐恢复的速度通常是所有人格里最快的，因为你已经有了最难建立的东西：习惯和执行力。',
+    advice:[
+      {title:'训练的效果有 25% 正在睡眠缺口中流失',source:'Walker《我们为什么要睡觉》',
+       body:'睡眠中的肌肉修复效率，在睡眠不足时下降约 24%。同样的训练量，睡够的人获得更强的适应。对阿喀琉斯来说，这意味着你以为在进步，但有相当一部分努力在空转——补上这块，同样的训练量能多拿回 25% 的回报。',
+       action:'设一个「该睡觉了」的闹钟，而不只是明天的起床闹钟。高强度训练后的当晚，入睡时间不得晚于平时 30 分钟——节律比总时长更重要，哪怕只睡 6.5 小时但时间稳定，也优于睡 8 小时但时间漂移 2 小时。'},
+      {title:'你的两次训练之间，恢复窗口比你以为的更长',source:'Lieberman《锻炼》',
+       body:'锻炼是触发信号，修复才是产生效果的过程。两次高强度训练之间如果恢复不足，身体处理应激的效率会随训练频率递减——这就是「练越多、涨越慢」高原期的根源。',
+       action:'两次高强度训练之间，插入一次轻松有氧活动（能正常说话、略感吃力，持续 30-40 分钟）。这比完全休息一天更有效地缩短恢复窗口，同时不增加新的应激。'},
+      {title:'你的免疫系统正在悄悄替你承担账单',source:'Walker《我们为什么要睡觉》',
+       body:'单次睡眠不足使免疫细胞活力下降约 70%。阿喀琉斯的特殊之处在于：高训练量本身就是额外的免疫压力——在睡眠不足的状态下，两种压力叠加。',
+       action:'下次体检多加一项炎症指标检测。如果你的训练量很大但炎症指标偏高，这就是身体给你的真实反馈，比任何主观感受都更准确。跟医生说「我想查一下慢性炎症水平」就够了。'},
+    ]
+  },
+  volcano: {
+    name:'休眠的火山', en:'The Dormant Volcano',
+    tagline:'能量就在那里，只差一个触发点',
+    color:'var(--orange)', colorHex:'#ff9f0a', bg:'var(--orange-bg)',
+    portrait:'你的睡眠质量不错，情绪稳定，生活相当规律，心态平和。火山极度顺应了人类进化出的「节约能量」本能，Lieberman 明确说过这不是懒惰，是几百万年的生存智慧。火山最大的资产是强大的恢复能力，这是其他人格花很大力气都未必能拥有的起跑优势。',
+    focus:'好睡眠的修复潜力正在等待被激活：没有运动应激作为触发信号，睡眠中的生长激素和细胞修复机制没有「施工对象」。这就像有了充裕的建材，但还没有设计图纸。一旦开始，你的进步速度会让自己惊讶。',
+    advice:[
+      {title:'你的身体需要一个「开机信号」',source:'Lieberman《锻炼》',
+       body:'中等程度的运动应激，是强制身体开启细胞修复、清除受损蛋白质、激活免疫维护的触发器。没有这个信号，身体会「认为」不需要维护。对火山来说，问题不在于有什么不好的习惯，而在于缺少一个启动按钮。',
+       action:'从「最小有效剂量」开始——每周 3 次，每次 20 分钟的快走（能说话但略感吃力）。不需要健身房，不需要装备。关键是发出信号，而不是达到某个训练量。'},
+      {title:'你的恢复力是开始运动时摩擦力最小的优势',source:'Walker + Attia',
+       body:'大多数人开始运动失败，是因为运动后的疲劳和酸痛让他们第二天不想再动。火山的高恢复能力意味着运动后恢复更快、负面感受更弱——这正是建立运动习惯最有利的内在条件，比任何其他人格类型都有更高的习惯养成成功概率。',
+       action:'用你的睡眠优势当杠杆——把运动安排在睡前 3 小时以外，让好睡眠帮你快速恢复。正向循环：运动 → 好睡 → 快速恢复 → 不排斥运动 → 坚持下去。你拥有别人羡慕的起跑优势。'},
+      {title:'轻松有氧是你代谢系统重新点火的开关',source:'Attia《超越百岁》',
+       body:'轻松有氧（能说话但无法唱歌的强度）是提升线粒体效率和代谢灵活性的基础。线粒体效率低意味着身体利用脂肪供能的能力弱——这与体重无关，外表正常的人完全可能有代谢灵活性不足的问题。',
+       action:'把轻松有氧嵌入日常生活，不要单独留出「锻炼时间」——饭后步行 20 分钟，爬楼梯不坐电梯，骑车代替开车。人类进化出的大部分活动量来自日常劳动，不是专项锻炼。把活动融入生活，比健身计划更可持续。'},
+    ]
+  },
+  nightwalker: {
+    name:'蓄势的夜行者', en:'The Night Walker',
+    tagline:'每一小步都能带来肉眼可见的变化',
+    color:'var(--purple)', colorHex:'#bf5af2', bg:'var(--purple-bg)',
+    portrait:'你简直是当代都市生活最典型的节奏画像。白天坐着工作，晚上刷手机放松，偶尔运动一次，大部分时间靠咖啡因维持运转。这与个人意志力无关，Lieberman 说过，人类的身体就没有为久坐 8 小时的办公室生活做过进化准备。夜行者最大的利好是：你的改善空间是所有人格里最大的，同样的努力能带来最明显的体感变化。',
+    focus:'睡眠和运动两件事会互相影响：睡好了更有精力动，动了之后又更容易睡好。关键是找到一个入口撬动这个正向循环，不需要同时改两件事，先稳住一头，另一头会自然跟上。',
+    advice:[
+      {title:'先修睡眠，不要同时改两件事',source:'Walker《我们为什么要睡觉》',
+       body:'同时改变睡眠和运动习惯，会让意志力在两个方向消耗，通常两件事都半途而废。而睡眠改善的正向反馈最快（约 10-14 天可感知），它会直接提升精力和做决定的能力——到时候再开始运动，阻力会小得多。',
+       action:'第一个月只做一件事——固定起床时间，哪怕睡晚了也不变。同时把手机放到床够不到的地方充电。其他所有「好习惯」先放一放。等这一件事稳定了再说下一步——不是因为少做，是因为这样成功率最高。'},
+      {title:'15 分钟步行是现在最高性价比的健康投资',source:'Lieberman《锻炼》',
+       body:'肌肉在收缩时会释放抑制慢性炎症的信号分子。研究显示连续步行 15 分钟就能显著提升这些抗炎分子的水平——不需要流汗，只需要走路。',
+       action:'每天饭后步行 15 分钟，不要把它叫做「锻炼」——就是走路消化。不要从高强度开始：身体记住了「运动=痛苦」会建立排斥反射。夜行者需要的是「重新让身体发现动起来是舒服的」。'},
+      {title:'你的身体比体检报告显示的更需要关注',source:'Attia《超越百岁》',
+       body:'很多慢性健康问题在血糖出现异常的 10-15 年前就已经存在，常规体检往往捕捉不到这么早期的信号。「体检正常」不等于「代谢健康」——现在是最低成本的关注时机。',
+       action:'下次体检跟医生多聊两句，说「我想了解一下自己的代谢健康状况，除了常规项目，有什么值得加测的吗？」让医生根据你的情况建议——这一步本身就是从被动到主动的转变。'},
+    ]
+  }
+};
+
+// ===== STATE =====
+let currentQ = 0;
+let answers = [];
+let R = 0, O = 0;
+const AUTHOR_LINK = 'https://xhslink.com/m/2WD4NkxZgNN';
+const shareQuotes = {
+  grandmaster: {
+    title:'现在就开始为 80 岁的自己存「力量退休金」',
+    body:'想在 85 岁能轻松抱起一个孩子，你今天需要具备这个目标力量的 150%——因为 40 岁后每十年流失 8-17% 的肌肉量。有氧能力出色的宗师，往往轻视了对力量训练的系统投入。',
+    source:'Attia《超越百岁》',
+  },
+  achilles: {
+    title:'训练的效果有 25% 正在睡眠缺口中流失',
+    body:'睡眠中的肌肉修复效率，在睡眠不足时下降约 24%。同样的训练量，睡够的人获得更强的适应。对阿喀琉斯来说，这意味着你以为在进步，但有相当一部分努力在空转——补上这块，同样的训练量能多拿回 25% 的回报。',
+    source:'Walker《我们为什么要睡觉》',
+  },
+  volcano: {
+    title:'你的恢复力是开始运动时摩擦力最小的优势',
+    body:'大多数人开始运动失败，是因为运动后的疲劳和酸痛让他们第二天不想再动。你的高恢复能力意味着运动后恢复更快、负面感受更弱——比任何其他人格类型都有更高的习惯养成成功概率。',
+    source:'Walker + Attia',
+  },
+  nightwalker: {
+    title:'15 分钟步行是现在最高性价比的健康投资',
+    body:'肌肉在收缩时会释放抑制慢性炎症的信号分子。研究显示连续步行 15 分钟就能显著提升这些抗炎分子的水平——不需要流汗，只需要走路。',
+    source:'Lieberman《锻炼》',
+  },
+};
+
+// ===== FUNCTIONS =====
+function $(sel){return document.querySelector(sel)}
+function $$(sel){return document.querySelectorAll(sel)}
+function normalizeDashText(text){
+  if(!text) return '';
+  return text
+    .trim()
+    .replace(/\s*——+\s*/g, '，')
+    .replace(/\s*—\s*/g, '，')
+    .replace(/([\u4e00-\u9fff])([A-Za-z0-9]+)/g, '$1 $2')
+    .replace(/([A-Za-z0-9]+)([\u4e00-\u9fff])/g, '$1 $2')
+    .replace(/([A-Za-z])\+([A-Za-z])/g, '$1 + $2')
+    .replace(/，([，。！？])/g, '$1')
+    .replace(/[ \t]{2,}/g, ' ');
+}
+function stripEggSignature(text){
+  if(!text) return '';
+  return normalizeDashText(text);
+}
+
+function switchScreen(from, to){
+  const f = $(`#screen-${from}`);
+  const t = $(`#screen-${to}`);
+  if(f){
+    f.classList.remove('active');
+    f.classList.add('exit');
+    // Clear per-question inline animation styles to avoid overlay artifacts.
+    f.style.opacity = '';
+    f.style.transform = '';
+  }
+  setTimeout(()=>{
+    if(f)f.classList.remove('exit');
+    t.style.opacity = '';
+    t.style.transform = '';
+    t.classList.add('active');
+    t.scrollTop = 0;
+  }, from ? 300 : 0);
+}
+
+function startTest(){
+  currentQ = 0;
+  answers = [];
+  R = 0; O = 0;
+  renderQuestion();
+  switchScreen('landing','question');
+}
+
+function renderQuestion(){
+  const q = questions[currentQ];
+  const total = questions.length;
+  const progress = ((currentQ) / total * 100);
+  const isModuleB = currentQ >= 4;
+  
+  let html = `
+    <div class="progress-wrap">
+      <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+      <div class="progress-text">${currentQ + 1} / ${total}</div>
+    </div>
+    <div class="q-module">${q.module}</div>
+    <div class="q-title">${normalizeDashText(q.title)}</div>
+    <div class="q-options">
+  `;
+  
+  q.options.forEach((opt, i) => {
+    const hasEgg = isModuleB && opt.egg;
+    html += `
+      <div>
+        <div class="q-opt" data-idx="${i}" onclick="selectOption(${i})">
+          <div class="q-opt-letter">${opt.label}</div>
+          <div class="q-opt-text">${normalizeDashText(opt.text)}</div>
+        </div>
+        ${hasEgg ? `
+        <div class="q-egg" id="egg-${i}">
+          <div class="q-egg-inner">
+            <p><span class="egg-emoji">💡</span>${stripEggSignature(opt.egg)}</p>
+          </div>
+        </div>` : ''}
+        ${q.encouragements ? `
+        <div class="q-encourage" id="enc-${i}">
+          <div class="q-encourage-inner">${normalizeDashText(q.encouragements[i])}</div>
+        </div>` : ''}
+      </div>
+    `;
+  });
+  
+  html += `
+    </div>
+    <div class="q-next-wrap">
+      <button class="btn-next" id="btn-next" onclick="nextQuestion()">下一题</button>
+    </div>
+  `;
+  
+  const screen = $('#screen-question');
+  screen.innerHTML = html;
+  screen.scrollTop = 0;
+  
+  // Animate progress
+  requestAnimationFrame(()=>{
+    const fill = screen.querySelector('.progress-fill');
+    if(fill) fill.style.width = `${((currentQ + 1) / total * 100)}%`;
+  });
+}
+
+function selectOption(idx){
+  const opts = $$('#screen-question .q-opt');
+  const eggs = $$('#screen-question .q-egg');
+  const encs = $$('#screen-question .q-encourage');
+  
+  opts.forEach((o,i)=>{
+    o.classList.toggle('selected', i === idx);
+  });
+  eggs.forEach((e,i)=>{
+    e.classList.toggle('show', i === idx);
+  });
+  encs.forEach((e,i)=>{
+    e.classList.toggle('show', i === idx);
+  });
+  
+  answers[currentQ] = idx;
+  
+  // Show next button after selecting any option.
+  const btn = $('#btn-next');
+  if(!btn) return;
+  btn.classList.add('visible');
+}
+
+function nextQuestion(){
+  if(answers[currentQ] === undefined) return;
+  
+  // Score if Module B
+  const q = questions[currentQ];
+  if(currentQ >= 4){
+    const opt = q.options[answers[currentQ]];
+    R += opt.r || 0;
+    O += opt.o || 0;
+  }
+  
+  currentQ++;
+  if(currentQ < questions.length){
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function getPersonality(){
+  const highR = R >= 17, highO = O >= 17;
+  if(highR && highO) return 'grandmaster';
+  if(highR && !highO) return 'volcano';
+  if(!highR && highO) return 'achilles';
+  return 'nightwalker';
+}
+
+function getCrossValidation(){
+  const q4 = answers[3]; // Q4 index
+  let note = '';
+  if(q4 === 3 && O < 10){ // High freq training but low O
+    const p = getPersonality();
+    if(p === 'achilles'){
+      note = '你的训练频率很高，但身体的实际输出效率显示恢复节奏还没跟上——一旦补齐这块，你的训练效果会明显上一个台阶。';
+    }
+  }
+  if(q4 === 0 && O >= 17){ // Never exercise but high O
+    note = '你的日常活动量已经在发挥作用——在 Lieberman 的框架里，这完全算数。';
+  }
+  return note;
+}
+
+function ringSVG(score, max, color, size=100, sw=8){
+  const r = (size - sw) / 2;
+  const circ = 2 * Math.PI * r;
+  const pct = Math.min(score / max, 1);
+  const offset = circ * (1 - pct);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" class="ring-bg" stroke-width="${sw}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" class="ring-fill" 
+      stroke="${color}" stroke-width="${sw}" 
+      stroke-dasharray="${circ}" stroke-dashoffset="${circ}"
+      data-target="${offset}"/>
+  </svg>`;
+}
+function showResult(){
+  const pKey = getPersonality();
+  const p = personalities[pKey];
+  const crossNote = getCrossValidation();
+  
+  let html = `<div class="result">`;
+  
+  html += `<div class="result-badge animate-in" style="background:${p.bg};color:${p.color}">
+    ✦ 你的健康人格
+  </div>`;
+  
+  html += `<div class="result-name animate-in delay-1" style="color:${p.color}">${p.name}</div>`;
+  html += `<div class="result-name-en animate-in delay-1">${normalizeDashText(p.en)}</div>`;
+  html += `<div class="result-tagline animate-in delay-2">${normalizeDashText(p.tagline)}</div>`;
+  
+  // Rings
+  html += `<div class="rings-wrap animate-in delay-3">
+    <div class="ring-container">
+      ${ringSVG(R, 33, '#30d158')}
+      <div class="ring-label">
+        <div class="ring-score" style="color:#30d158">${R}</div>
+        <div class="ring-title">恢复力</div>
+      </div>
+    </div>
+    <div class="ring-container">
+      ${ringSVG(O, 33, '#0a84ff')}
+      <div class="ring-label">
+        <div class="ring-score" style="color:#0a84ff">${O}</div>
+        <div class="ring-title">行动力</div>
+      </div>
+    </div>
+  </div>`;
+  
+  // Portrait
+  html += `<p class="animate-in delay-4" style="font-size:14px;line-height:1.75;color:var(--text2);margin-bottom:16px">${normalizeDashText(p.portrait)}</p>`;
+  html += `<p class="animate-in delay-5" style="font-size:14px;line-height:1.75;color:var(--text);margin-bottom:8px">${normalizeDashText(p.focus)}</p>`;
+  
+  // Cross validation
+  if(crossNote){
+    html += `<div class="cross-note animate-in delay-5">${normalizeDashText(crossNote)}</div>`;
+  }
+  
+  // Advice
+  html += `<div class="advice-section">
+    <div class="advice-section-title">为你定制的行动建议</div>`;
+  
+  p.advice.forEach((a, i) => {
+    html += `<div class="advice-card animate-in" style="animation-delay:${0.6+i*0.12}s;border-left-color:${p.color}">
+      <h3>${normalizeDashText(a.title)}</h3>
+      <p>${normalizeDashText(a.body)}<br><span style="font-size:12px;color:var(--text3)">—— ${a.source}</span></p>
+      <div class="advice-action" style="color:${p.color}">${normalizeDashText(a.action)}</div>
+    </div>`;
+  });
+  
+  html += `</div>`;
+  
+  // Share
+  html += `<div class="share-section animate-in" style="animation-delay:.9s">
+    <p>祝人类健康！</p>
+    <button class="btn-share" onclick="openShare()">
+      <svg viewBox="0 0 20 20" fill="none"><path d="M10 3v10M6 7l4-4 4 4" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M3 13v3a1 1 0 001 1h12a1 1 0 001-1v-3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+      生成分享卡片
+    </button>
+    <button class="btn-restart" onclick="restart()">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1111.5-2.5M14 2v4h-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      重新测试
+    </button>
+  </div>`;
+  
+  html += `</div>`;
+  
+  const screen = $('#screen-result');
+  screen.innerHTML = html;
+  switchScreen('question','result');
+  
+  // Animate rings after appearing
+  setTimeout(()=>{
+    $$('.ring-fill').forEach(ring => {
+      const target = ring.getAttribute('data-target');
+      ring.style.strokeDashoffset = target;
+    });
+  }, 600);
+}
+
+function openShare(){
+  const pKey = getPersonality();
+  const p = personalities[pKey];
+  const card = $('#share-card');
+  const shareThemeMap = {
+    nightwalker:'#B060E0',
+    grandmaster:'#30D158',
+    achilles:'#FF9F0A',
+    volcano:'#0A84FF',
+  };
+  const shareThemeColor = shareThemeMap[pKey] || p.colorHex;
+  const shareQuote = shareQuotes[pKey] || {
+    title:p.advice[0].title,
+    body:p.advice[0].body,
+    source:p.advice[0].source,
+  };
+  
+  card.innerHTML = `
+    <button class="share-close" onclick="closeShare(event)">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 4l8 8M12 4l-8 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    </button>
+    <div id="share-capture">
+      <div class="share-export-name" style="color:${shareThemeColor}">${p.name}</div>
+      <div class="share-export-en">${normalizeDashText(p.en)}</div>
+      <div class="share-export-tagline">${normalizeDashText(p.tagline)}</div>
+      <div class="share-export-quote">
+        <div class="share-export-quote-title">💡 ${normalizeDashText(shareQuote.title)}</div>
+        <div class="share-export-quote-text">${normalizeDashText(shareQuote.body)}</div>
+        <div class="share-export-source">—— ${normalizeDashText(shareQuote.source)}</div>
+      </div>
+      <div class="share-export-footer">
+        <div class="share-export-bless">祝你健康！</div>
+        <div class="share-export-sign">健康人格测试 · by <a class="share-export-author" href="${AUTHOR_LINK}" target="_blank" rel="noopener noreferrer">@一龙小包子</a></div>
+        <div class="share-export-link">health-personality.vercel.app</div>
+      </div>
+    </div>
+    <div class="share-save-wrap">
+      <div class="share-save-loading" id="share-save-loading">正在生成高清图片…</div>
+      <img class="share-save-img" id="share-save-img" alt="分享卡片预览图">
+    </div>
+    <div class="share-save-tip">长按保存图片</div>
+  `;
+  
+  $('#share-overlay').classList.add('show');
+  setTimeout(renderShareSaveImage, 180);
+}
+
+async function renderShareSaveImage(){
+  const capture = $('#share-capture');
+  const outputImg = $('#share-save-img');
+  const loading = $('#share-save-loading');
+  if(!capture || !outputImg || !loading) return;
+  
+  try{
+    if(typeof html2canvas !== 'function'){
+      throw new Error('html2canvas not loaded');
+    }
+    const scale = 2;
+    const canvas = await html2canvas(capture, {
+      backgroundColor:'#1D1D1F',
+      width:450,
+      height:600,
+      scale,
+      useCORS:true,
+    });
+    outputImg.src = canvas.toDataURL('image/png', 1);
+    outputImg.classList.add('ready');
+    loading.style.display = 'none';
+  }catch(err){
+    loading.textContent = '图片生成失败，请使用系统截图保存';
+  }
+}
+
+function closeShare(e){
+  if(e.target === e.currentTarget || e.target.closest('.share-close')){
+    $('#share-overlay').classList.remove('show');
+  }
+}
+
+function restart(){
+  currentQ = 0; answers = []; R = 0; O = 0;
+  $('#screen-result').classList.remove('active');
+  $('#screen-result').innerHTML = '';
+  switchScreen(null,'landing');
+}
+</script>
+<script>
+  window.va = window.va || function(){ (window.vaq = window.vaq || []).push(arguments); };
+</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</body>
+</html>
