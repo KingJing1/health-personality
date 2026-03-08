@@ -1,5 +1,3 @@
-# health-personality
-
 **Health Personality**
 
 A science-backed health personality quiz — 15 scenario-based questions, 2 minutes, classifies you into one of four body-mind types with personalized recommendations.
